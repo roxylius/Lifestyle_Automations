@@ -85,6 +85,48 @@ final class ScheduleCalculatorTests: XCTestCase {
         XCTAssertNil(due)
     }
 
+    func testDefaultReminderAudioLoopsUntilAction() {
+        let water = DefaultReminderFactory.waterReminder()
+        let eyeDrops = DefaultReminderFactory.eyeDropsReminder()
+        let custom = DefaultReminderFactory.customReminder()
+
+        XCTAssertEqual(water.audioPlaybackMode, .loopUntilAction)
+        XCTAssertEqual(eyeDrops.audioPlaybackMode, .loopUntilAction)
+        XCTAssertEqual(custom.audioPlaybackMode, .loopUntilAction)
+        XCTAssertEqual(water.audioRepeatCount, 3)
+        XCTAssertEqual(water.audioRepeatGapSeconds, 1.5)
+    }
+
+    func testOldReminderJSONDefaultsToLoopUntilAction() throws {
+        let json = """
+        {
+          "id": "legacy",
+          "title": "Legacy reminder",
+          "message": "Reminder time.",
+          "enabled": true,
+          "schedule": {
+            "mode": "fixedTimes",
+            "activeStart": { "hour": 8, "minute": 0 },
+            "activeEnd": { "hour": 22, "minute": 0 },
+            "times": [{ "hour": 9, "minute": 0 }]
+          },
+          "asset": { "style": "custom" },
+          "speechText": "Reminder",
+          "actionLabel": "Done",
+          "repeatUntilAcknowledged": true,
+          "nagEveryMinutes": 10,
+          "snoozeMinutes": 10,
+          "volume": 0.5
+        }
+        """
+
+        let job = try JSONDecoder().decode(ReminderJob.self, from: Data(json.utf8))
+
+        XCTAssertEqual(job.audioPlaybackMode, .loopUntilAction)
+        XCTAssertEqual(job.audioRepeatCount, 3)
+        XCTAssertEqual(job.audioRepeatGapSeconds, 1.5)
+    }
+
     private func date(year: Int, month: Int, day: Int, hour: Int, minute: Int) -> Date {
         calendar.date(from: DateComponents(
             timeZone: calendar.timeZone,

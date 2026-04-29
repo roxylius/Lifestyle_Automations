@@ -12,6 +12,7 @@ final class ReminderPanelController: ReminderPresenting {
     }
 
     func present(_ dueReminder: DueReminder) {
+        audioPlayer.stop()
         audioPlayer.play(for: dueReminder.job)
 
         let panel = panel ?? makePanel()
@@ -32,6 +33,7 @@ final class ReminderPanelController: ReminderPresenting {
     }
 
     private func acknowledge(_ dueReminder: DueReminder) {
+        audioPlayer.stop()
         if !dueReminder.isTest {
             store.acknowledge(jobID: dueReminder.job.id, occurrenceID: dueReminder.occurrenceID)
         }
@@ -39,6 +41,7 @@ final class ReminderPanelController: ReminderPresenting {
     }
 
     private func snooze(_ dueReminder: DueReminder) {
+        audioPlayer.stop()
         if !dueReminder.isTest {
             store.snooze(jobID: dueReminder.job.id, minutes: dueReminder.job.snoozeMinutes)
         }
@@ -46,6 +49,7 @@ final class ReminderPanelController: ReminderPresenting {
     }
 
     private func skipToday(_ dueReminder: DueReminder) {
+        audioPlayer.stop()
         if !dueReminder.isTest {
             store.skipToday(jobID: dueReminder.job.id)
         }

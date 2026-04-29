@@ -20,6 +20,7 @@ schedule to match your own doctor's instructions.
 - Animated GIF reminders for water and eye drops.
 - Voice prompt at configurable volume.
 - Custom audio file picker for each reminder.
+- Audio loops until you respond by default.
 - Custom GIF/PNG picker for each reminder.
 - Add, edit, disable, delete, test, snooze, or skip reminders.
 - Local-only storage in `~/Library/Application Support/GlassReminders`.
@@ -97,7 +98,29 @@ You can edit:
 - Voice text.
 - GIF/PNG animation.
 - Custom sound file.
+- Audio playback mode: loop until action, or repeat a fixed number of times.
 - Volume.
+
+## Audio And Snooze Behavior
+
+By default, each reminder speaks the voice prompt once, then loops the selected
+sound until you respond. This applies to water, eye drops, and custom
+reminders.
+
+The audio stops immediately when you click:
+
+- `Drank water`
+- `Done`
+- `Snooze`
+- `Skip today`
+
+If you choose a custom sound file in Settings, that custom file becomes the
+looping sound. If no custom sound is selected, Glass Reminders uses a macOS
+system sound.
+
+`Snooze` means "hide this reminder for the configured snooze duration." The
+default snooze duration is 10 minutes. Snooze does not mark the reminder as
+complete; it only delays the next popup for that reminder.
 
 Custom GIFs, PNGs, and audio files are copied into:
 

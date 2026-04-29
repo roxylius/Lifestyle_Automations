@@ -264,6 +264,29 @@ struct SettingsView: View {
                         .frame(width: 44, alignment: .trailing)
                         .monospacedDigit()
                 }
+
+                Picker("Audio playback", selection: audioPlaybackModeBinding) {
+                    ForEach(AudioPlaybackMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                if draft?.audioPlaybackMode == .repeatCount {
+                    HStack {
+                        Stepper("Repeat \(audioRepeatCountBinding.wrappedValue) times", value: audioRepeatCountBinding, in: 1...20)
+                        Stepper(
+                            "Gap \(String(format: "%.1f", audioRepeatGapBinding.wrappedValue))s",
+                            value: audioRepeatGapBinding,
+                            in: 0...30,
+                            step: 0.5
+                        )
+                    }
+                } else {
+                    Text("Sound loops until you click Done, Drank water, Snooze, or Skip today.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
@@ -300,6 +323,13 @@ struct SettingsView: View {
         )
     }
 
+    private var audioPlaybackModeBinding: Binding<AudioPlaybackMode> {
+        Binding(
+            get: { draft?.audioPlaybackMode ?? .loopUntilAction },
+            set: { draft?.audioPlaybackMode = $0 }
+        )
+    }
+
     private var intervalBinding: Binding<Int> {
         Binding(
             get: { draft?.schedule.intervalMinutes ?? 90 },
@@ -318,6 +348,20 @@ struct SettingsView: View {
         Binding(
             get: { draft?.snoozeMinutes ?? 10 },
             set: { draft?.snoozeMinutes = $0 }
+        )
+    }
+
+    private var audioRepeatCountBinding: Binding<Int> {
+        Binding(
+            get: { draft?.audioRepeatCount ?? 3 },
+            set: { draft?.audioRepeatCount = $0 }
+        )
+    }
+
+    private var audioRepeatGapBinding: Binding<Double> {
+        Binding(
+            get: { draft?.audioRepeatGapSeconds ?? 1.5 },
+            set: { draft?.audioRepeatGapSeconds = $0 }
         )
     }
 
@@ -356,6 +400,8 @@ struct SettingsView: View {
         job.volume = min(max(job.volume, 0), 1)
         job.nagEveryMinutes = max(job.nagEveryMinutes, 1)
         job.snoozeMinutes = max(job.snoozeMinutes, 1)
+        job.audioRepeatCount = max(job.audioRepeatCount, 1)
+        job.audioRepeatGapSeconds = max(job.audioRepeatGapSeconds, 0)
 
         store.update(job)
         draft = job
